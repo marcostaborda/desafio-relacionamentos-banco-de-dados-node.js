@@ -1,7 +1,8 @@
+## Create
 POST http://localhost:3333/customers HTTP/1.1
 content-type: application/json
 
 {
-    "name": "Marcos Taborda",
-    "email": "marcos.tabordamail2s@gmail.com"
+  "name": "Marcos Taborda",
+  "email": "marcos.tabordamail2s@gmail.com"
 }
