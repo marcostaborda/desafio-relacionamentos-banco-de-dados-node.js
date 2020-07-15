@@ -1,0 +1,21 @@
+### Create - Tem que ter produtos criados previamente e customer_id
+POST http://localhost:3333/orders HTTP/1.1
+content-type: application/json
+
+{
+  "customer_id": "a60b6f03-3bf8-43a8-a631-6d8fd67892c2",
+  "products": [
+    {
+      "id": "db59ef16-cff0-4273-a0d4-063991f3eeac",
+      "quantity": 5
+    },
+    {
+      "id": "f3393ce3-3f91-4d43-a0a8-a5ad014abcee",
+      "quantity": 7
+    }
+  ]
+}
+
+### Show
+
+GET http://localhost:3333/orders/629b5a6e-7d91-441a-87c5-9005a5d816bc HTTP/1.1

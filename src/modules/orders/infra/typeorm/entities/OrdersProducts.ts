@@ -3,32 +3,44 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
   PrimaryGeneratedColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import Order from '@modules/orders/infra/typeorm/entities/Order';
 import Product from '@modules/products/infra/typeorm/entities/Product';
 
+@Entity('orders_products')
 class OrdersProducts {
-  id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
-  order: Order;
+  @ManyToOne(() => Order, order => order.order_products)
+  @JoinColumn({ name: 'order_id', referencedColumnName: 'id' })
+  order!: Order;
 
-  product: Product;
+  @ManyToOne(() => Product, { cascade: true })
+  @JoinColumn({ name: 'product_id', referencedColumnName: 'id' })
+  product!: Product;
 
-  product_id: string;
+  @Column()
+  product_id!: string;
 
-  order_id: string;
+  @Column()
+  order_id!: string;
 
-  price: number;
+  @Column()
+  price!: number;
 
-  quantity: number;
+  @Column()
+  quantity!: number;
 
-  created_at: Date;
+  @CreateDateColumn()
+  created_at!: Date;
 
-  updated_at: Date;
+  @UpdateDateColumn()
+  updated_at!: Date;
 }
 
 export default OrdersProducts;
