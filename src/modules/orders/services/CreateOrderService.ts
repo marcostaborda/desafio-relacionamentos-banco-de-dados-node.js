@@ -4,6 +4,7 @@ import AppError from '@shared/errors/AppError';
 
 import IProductsRepository from '@modules/products/repositories/IProductsRepository';
 import ICustomersRepository from '@modules/customers/repositories/ICustomersRepository';
+import console from 'console';
 import Order from '../infra/typeorm/entities/Order';
 import IOrdersRepository from '../repositories/IOrdersRepository';
 
@@ -38,21 +39,50 @@ class CreateOrderService {
     const productsData = await this.productsRepository.findAllById(
       products.map(product => ({ id: product.id })),
     );
-    const productsOrder = productsData.map(productData => {
-      const productRequest = products.find(
-        product => product.id === productData.id,
+
+    if (!productsData.length) {
+      throw new AppError('Could not find any products with the given ids');
+    }
+
+    const productsSerialized = products.map(productRequest => {
+      const productFind = productsData.find(
+        product => product.id === productRequest.id,
       );
+      if (!productFind) {
+        throw new AppError(`
+        Could not find product with ${productRequest.id}`);
+      }
+      if (
+        productFind.quantity === 0 ||
+        productFind.quantity <= productRequest.quantity
+      ) {
+        throw new AppError(`
+        The quantity ${productRequest.quantity}
+        is not available for ${productRequest.id}`);
+      }
       return {
-        product_id: productData.id,
-        price: productData.price,
-        quantity: productRequest?.quantity ?? 0,
+        product_id: productRequest.id,
+        price: productFind.price,
+        quantity: productRequest.quantity,
       };
     });
 
     const order = await this.ordersRepository.create({
       customer,
-      products: productsOrder,
+      products: productsSerialized,
     });
+
+    const { order_products } = order;
+
+    const productsUpdateQuantity = order_products.map(order_product => ({
+      id: order_product.product_id,
+      quantity:
+        (productsData.find(product => product.id === order_product.product_id)
+          ?.quantity ?? 0) - order_product.quantity,
+    }));
+    console.log(productsUpdateQuantity);
+
+    await this.productsRepository.updateQuantity(productsUpdateQuantity);
 
     return order;
   }
