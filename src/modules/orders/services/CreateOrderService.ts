@@ -4,7 +4,7 @@ import AppError from '@shared/errors/AppError';
 
 import IProductsRepository from '@modules/products/repositories/IProductsRepository';
 import ICustomersRepository from '@modules/customers/repositories/ICustomersRepository';
-import console from 'console';
+
 import Order from '../infra/typeorm/entities/Order';
 import IOrdersRepository from '../repositories/IOrdersRepository';
 
@@ -80,7 +80,6 @@ class CreateOrderService {
         (productsData.find(product => product.id === order_product.product_id)
           ?.quantity ?? 0) - order_product.quantity,
     }));
-    console.log(productsUpdateQuantity);
 
     await this.productsRepository.updateQuantity(productsUpdateQuantity);
 
